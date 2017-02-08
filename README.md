@@ -1,0 +1,2 @@
+# AElfgen
+/Fantasy names generator/
