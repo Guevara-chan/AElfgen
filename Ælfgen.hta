@@ -1,0 +1,109 @@
+﻿<html>
+<head>
+	<hta:application version='0.95' contextMenu='no' scroll='no' scrollFlat='yes' innerBorder='no'/>
+	<title>=[Ælfgen]=</title>
+	<script> // Quick preloader.
+		window.resizeTo(width = 450, height = 590)
+		window.moveTo((screen.width - width) / 2, (screen.height - height) / 2)
+	</script>
+	<script src="res/sugar.min.js"></script>
+	<script src="res/coffeescript.js"></script>
+	<style type="text/css">
+		.flat_control {
+			background: #1f1f1f;
+			border: 1px solid gray;
+			color: antiquewhite;
+			padding: 0px;
+			font-family: Consolas;
+			font-size: 10pt;
+		}
+	</style>
+</head>
+
+<body style='margin:0; background:#1f1f1f; cursor: default'>
+	<center style='background:#2f2f2f; margin-top: 3px'>
+		<button class='flat_control' style='padding-bottom:1px' onClick='make_names()'>Regenerate:</button>
+		<select class='flat_control' id="origin" style='color: thistle; margin-right: 4px' onChange='make_names()'>
+			<option value="elvaan">Elfborn</option>
+			<option value="dwarfi">Dwarfen</option>
+  	</select>
+  	<button class='flat_control' style='padding-bottom:1px' onClick='save_results()'>Dump</button>
+	</center>
+
+	<center style='padding: 3px 10px 53px 10px; height:100%;'>
+		<div id='output' style='overflow-y:scroll; height:100%; border:solid 2px #c8c8c8; cursor: text'></div>
+		<iframe id="void" width='0%' height = '0%'>[For dumping data]</iframe>
+	</center>
+
+	<center style='top: -50px; background:#2f2f2f; padding-bottom: 2px; position: relative'>
+		<span style='display:none'>[IE-related fix]</span>
+		<span style='color:khaki; margin-top: 0px; font-family: Palatino Linotype; font-size: 11pt; cursor: pointer'
+		onClick='wsh.Run("http://vk.com/guevara_chan")'>
+			- [Developed in 2016 by <i style='color: Aquamarine '>V.A. Guevara</i>] -
+		</span>
+		<span style='display:none'>[IE-related fix]</span>
+	</center>
+
+	<script type="text/coffeescript">
+		#.:Data storage:.
+		class Origins
+			@elvaan: {
+				first:	['А', 'Ан', 'Ан', 'А', 'Ва', 'А', 'Вей', 'Вил', 'Вэл', 'Ги', 'Ги', 'Иль', 'И', 'Ир', 'Ка', 'Кус', 'Лу', 'Мер', 'Мор', 'Нам', 'Эш', 'Ра', 'Рих', 'Ри', 'Ро', 'Силь', 'Син', 'Ска', 'Снор', 'Сва', 'Со', 'Сот', 'Стри', 'Су', 'Та', 'Та', 'Ти', 'Тил', 'Тир', 'Тхэль', 'Фи', 'Фур', 'Ха', 'Хар', 'Хи', 'Хон', 'Эль', 'Эль', 'Эн']
+				second: ['лир', 'геш', 'шель', 'ли', 'лас', 'у', 'ма', 'ма', 'у', 'су', 'тун', 'ки', 'ба', 'тан', 'ша', 'ун', 'о', 'ар', 'эл', 'ло', 'ла', 'ла', 'о', '-Таль']
+				third:	['тэ', 'ван']
+				fourth: ['ра', 'ти', 'тар', 'та', 'ер', 'тар', 'де', 'тан', 'ла', 'йом', 'эль', 'ра', 'го', 'тольс', 'ни', 'ма', 'ни', 'та', 'лас', 'ле', 'ги', 'эль', 'са', 'лис', 'да', 'мерн', 'дол', 'ш', 'ри', 'эль', 'ру', 'ти', 'ри', 'эл', 'лос', 'эль', 'лис', 'морф', 'ви', '-Вэнн', 'дель', 'мус', 'ни', 'т', 'ра', 'на', 'гашт', 'сар', 'меш']
+			}
+			@dwarfi: {
+				first:	['Ве', 'Ар']
+				second:	['ло', 'га']
+				third:	['a']
+				foruth:	['нор', 'ни']
+			}
+
+		#.:Classes:.
+		class RandomName
+			# --/Methods goes here/:
+			constructor: (set = origin.value) ->
+				take_chance = (percentage = 100) -> (Number.random 1, 100) <= percentage
+				syllables = Origins[set]																		# Inintial data set selection.
+				@data = (set.sample() for set, idx in Object.values(syllables) when take_chance [100, 75, 50, 100][idx])
+				if @data.length > 2 and not take_chance 25 then @data.pop()	# Fourth syllable removal.
+				@data = @data.join('')
+
+			toString: () ->
+				return @data
+
+		class CRC32Fingerprint
+			# --Precalculated data.
+			table:
+				(for c in [0..255]
+					for k in [0..7]
+						c = if c & 1 then 0xedb88320 ^ (c >>> 1) else (c >>> 1)
+					c >>> 0)
+
+			# --/Methods goes here/:
+			constructor: (src_text, crc = 0xffffffff) ->
+				for i in [0...src_text.length]
+					crc = @table[(crc ^ src_text.charCodeAt i) & 0xff] ^ (crc >>> 8)
+				@crc = (crc ^ 0xffffffff) >>> 0
+
+			toString: () ->
+				return @crc.hex()
+
+		#.:Auxilary procs:.
+		window.make_names = () ->
+			output.innerHTML = ("<p style='color:coral; margin:1px 0px; background: #181818;'>#{new RandomName}</p>"\
+				for i in [1..100]).unique().join('')
+
+		window.save_results = () ->
+			doc = document.getElementById('void').contentWindow.document
+			doc.write "<body style='#{document.body.style.cssText}'><center>#{output.innerHTML}</center></body>"
+			doc.execCommand "SaveAs", true, "Names [#{new CRC32Fingerprint output.innerText}].txt"
+			doc.close() # Writestream reset.
+
+		#.:Main code:.
+		window.wsh = new ActiveXObject "WScript.Shell"
+		make_names()
+	</script>
+</body>
+</html>
