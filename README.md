@@ -1,2 +1,1 @@
-# AElfgen
-/Fantasy names generator/
+/under construction/
