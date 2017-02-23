@@ -65,7 +65,7 @@
 			# --/Methods goes here/:
 			constructor: (set = origin.value) ->
 				take_chance = (percentage = 100) -> (Number.random 1, 100) <= percentage
-				syllables = Origins[set]																		# Inintial data set selection.
+				syllables = Origins[set]									# Inintial data set selection.
 				@data = (set.sample() for set, idx in Object.values(syllables) when take_chance [100, 75, 50, 100][idx])
 				if @data.length > 2 and not take_chance 25 then @data.pop()	# Fourth syllable removal.
 				@data = @data.join('')
@@ -77,7 +77,7 @@
 			# --Precalculated data.
 			table:
 				(for c in [0..255]
-					for k in [0..7]
+					for [0..7]
 						c = if c & 1 then 0xedb88320 ^ (c >>> 1) else (c >>> 1)
 					c >>> 0)
 
@@ -93,7 +93,7 @@
 		#.:Auxilary procs:.
 		window.make_names = () ->
 			output.innerHTML = ("<p style='color:coral; margin:1px 0px; background: #181818;'>#{new RandomName}</p>"\
-				for i in [1..100]).unique().join('')
+				for [1..100]).unique().join('')
 
 		window.save_results = () ->
 			doc = document.getElementById('void').contentWindow.document
