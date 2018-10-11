@@ -2,6 +2,8 @@
 __AElfgen__ is a barebone slavic elven name generator, prototyped in 24 hours by friendly request.  
 Powered by firstgen [CoffeeScript](https://github.com/jashkenas/coffeescript) and [SugarJS](https://github.com/andrewplummer/Sugar), it was developed to proof viability of actual webdev technologies for _HTA_ apps.
 
+__No release will be provided yet:__ just download sourcecode archive and run `Ælfgen.hta`
+
 # ⋮Featuræ⋮
 * Actual HTML-based desktop app in ~200Kb.
 * No _Electron_.
